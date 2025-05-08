@@ -4,7 +4,7 @@ ____________________________
 
 pip install pyinstaller
 
-cd "py_path"
+cd "app.py_path"
 
 pyinstaller --onefile --windowed "Isolated Risk Calculator.py" --icon=your_icon.ico
 ____________________________________________________
