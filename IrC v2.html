@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Isolated Risk Calculator</title>
+    <style>
+      body {
+        background: #1d1f22;
+        color: #e0e0e0;
+        font-family: "Segoe UI", sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        box-sizing: border-box;
+      }
+
+      .box,
+      .result {
+        display: flex;
+        flex-direction: column;
+        background: #282c34;
+        border-radius: 15px;
+        padding: 16px;
+        margin: 12px;
+        text-align: center;
+        font-weight: bold;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      input,
+      .result,
+      button {
+        border: none;
+        outline: none;
+        font-size: 16px;
+      }
+
+      input {
+        margin-top: 8px;
+        background: #333;
+        color: white;
+        padding: 12px;
+        border-radius: 12px;
+        text-align: center;
+        transition: background-color 0.3s ease;
+      }
+      input::-webkit-outer-spin-button,
+      input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      input:focus {
+        background: #444;
+      }
+
+      .flex-row {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .risk-btn {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #444;
+        color: white;
+        border-radius: 10px;
+        width: 90px;
+        height: 90px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+      }
+
+      .risk-btn:hover {
+        background: #666;
+      }
+
+      .slider-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      button {
+        background: #5f6368;
+        color: white;
+        padding: 14px 28px;
+        margin: 12px;
+        border-radius: 15px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background 0.3s ease;
+      }
+
+      button:hover {
+        background: #888;
+      }
+
+      .small-btn {
+        width: 20%;
+        padding: 14px 22px;
+        background: #003662;
+      }
+      .small-btn:hover {
+        background: #003057;
+      }
+
+      .result {
+        text-align: center;
+        width: 50%;
+        height: 100%;
+        background: #333;
+        padding: 16px;
+        padding-top: 0 !important;
+        overflow-y: auto;
+        border-radius: 12px;
+      }
+
+      .result p {
+        margin: 8px 0;
+      }
+
+      .result h3 {
+        color: #76c7c0;
+        font-size: 1.2em;
+      }
+      .cntr {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+      }
+      .main {
+        margin-top: 7%;
+        width: 50%;
+      }
+      .tmlvg {
+        display: flex;
+        justify-content: space-around;
+      }
+
+      .trknum {
+        display: flex;
+      }
+      .tm {
+        width: 100%;
+      }
+      .trk {
+        width: 50%;
+      }
+      .cal100 {
+        width: 70%;
+        background: rgb(0, 90, 81);
+      }
+      .cal100:hover {
+        background: rgb(0, 79, 71);
+      }
+      .better {
+        padding-bottom: 24.5px;
+      }
+      .red {
+        background-color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main">
+      <div class="tmlvg">
+        <div class="box tm">
+          Total Money
+          <input id="capital" type="number" />
+        </div>
+
+        <div class="box lvg">
+          Leverage
+          <input id="leverage" type="number" value="10" />
+        </div>
+      </div>
+
+      <div class="trknum">
+        <div class="box trk">
+          Total Risk
+          <input id="risk" type="number" />
+        </div>
+
+        <div class="flex-row">
+          <div class="risk-btn" onclick="setRisk(0.25)">.25</div>
+          <div class="risk-btn" onclick="setRisk(0.5)">.5</div>
+          <div class="risk-btn" onclick="setRisk(0.75)">.75</div>
+          <div class="risk-btn" onclick="setRisk(1)">1</div>
+        </div>
+      </div>
+
+      <div class="trknum">
+        <div class="box sl">
+          Stop Loss
+          <input id="stop" type="number" value="" />
+        </div>
+
+        <button class="small-btn" onclick="clearStop()">C</button>
+        <button class="cal100" onclick="calculate()">Calculate</button>
+      </div>
+
+      <div class="cntr">
+        <div class="result" id="result">
+          <h3 class="better">Result</h3>
+          <br /><br /><br /><br /><br /><br />
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function setRisk(val) {
+        document.getElementById("risk").value = val;
+      }
+
+      function clearStop() {
+        document.getElementById("stop").value = "";
+      }
+
+      function calculate() {
+        const capital = parseFloat(document.getElementById("capital").value);
+        const risk = parseFloat(document.getElementById("risk").value);
+        const stop = parseFloat(document.getElementById("stop").value);
+        const leverage = parseFloat(document.getElementById("leverage").value);
+
+        const resultBox = document.getElementById("result");
+
+        if (isNaN(capital) || isNaN(risk) || isNaN(stop) || isNaN(leverage)) {
+          resultBox.innerHTML = `<h3 class="better" style="color:pink;">❌ No Number</h3><br><br><br><br><br><br>`;
+          return;
+        }
+
+        const risk_amount = capital * (risk / 100);
+        const position_size = risk_amount / (stop / 100);
+        const leveraged = position_size / leverage;
+
+        resultBox.innerHTML =
+          `<h3>📊 Result</h3>` +
+          `💰 Total Money: $${capital.toFixed(2)}<br>` +
+          `⚠️ Total Risk: ${risk}% → $${risk_amount.toFixed(2)}<br>` +
+          `🛑 Stop Loss: ${stop}%<br>` +
+          `⚙️ Leverage: x${leverage}<br>` +
+          `━━━━━━━━━━━━━━━<br>` +
+          `✅ NO Leverage: $${position_size.toFixed(2)}<br>` +
+          `🚀 YES Leverage: $${leveraged.toFixed(2)}`;
+      }
+    </script>
+  </body>
+</html>
